@@ -2,7 +2,7 @@ name: Executing Multiple Jobs in Sequence using Needs
 
 on: push
 
-Jobs:
+jobs:
   build_job_1:
     runs-on: ubuntu-latest
     steps:

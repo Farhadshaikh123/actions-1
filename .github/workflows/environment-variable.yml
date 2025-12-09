@@ -1,0 +1,48 @@
+name: Test, Build and Push Docker Image
+
+on: 
+  push:
+    branches:
+        - main
+
+env:
+    CONTAINER_REGISTRY: docker.io
+    IMAGE_NAME: calculator-app
+
+jobs:
+    docker:
+        runs-on: ubuntu-latest
+        steps:
+
+        - name: Checkout Repo
+          uses: actions/checkout@v4
+
+        - name: Setup Python
+          uses: actions/setup-python@v5
+          with:
+            python-version: '3.12'
+
+        - name: Run Tests
+          run: pytest
+
+        - name: Login to Docker Hub
+          run: |
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
+              --username "${{ vars.DOCKER_USERNAME }}" \
+              --password-stdin
+
+        - name: Build Docker Image
+          run: |
+            docker build -t ${{ env.CONTAINER_REGISTRY }}/${{ vars.DOCKER_USERNAME }}/$IMAGE_NAME:latest .
+        
+        - name: Push Docker Image
+          run: |
+            echo docker push $CONTAINER_REGISTRY/${{ vars.DOCKER_USERNAME }}/$IMAGE_NAME:latest
+
+    deploy:
+        needs: docker
+        runs-on: ubuntu-latest
+        steps:
+        - name: Run container from Docker Hub image
+          run: |
+            echo docker run -d -p 8080:80 $CONTAINER_REGISTRY/${{ vars.DOCKER_USERNAME }}/$IMAGE_NAME:latest

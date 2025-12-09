@@ -43,7 +43,7 @@ jobs:
         
         - name: Push Docker Image
           run: |
-            echo docker push $CONTAINER_REGISTRY/${{ vars.DOCKER_USERNAME }}/$IMAGE_NAME:latest
+            docker push $CONTAINER_REGISTRY/${{ vars.DOCKER_USERNAME }}/$IMAGE_NAME:latest
 
     deploy:
         needs: docker

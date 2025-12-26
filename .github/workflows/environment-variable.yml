@@ -1,7 +1,7 @@
 name: Test, Build and Push Docker Images
 
 on: 
-  #push:
+  push:
     #branches:
         #- main
 
@@ -51,6 +51,7 @@ jobs:
             docker push $CONTAINER_REGISTRY/${{ vars.DOCKER_USERNAME }}/$IMAGE_NAME:latest
 
     deploy:
+        if: github.ref == 'refs/heads/main'
         needs: docker
         concurrency: # will cancel all the running workflow
           group: production-deployment
